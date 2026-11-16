@@ -1,0 +1,14 @@
+# Large files
+experiment/01_chembl_data/egfr_activities_raw.json
+experiment/03_docking/chemberta_embeddings.npy
+save_folder/
+result/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
