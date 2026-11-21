@@ -265,14 +265,18 @@ def main():
     # 단계별 화합물 수 (이전 단계 결과 로드)
     raw_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "01_chembl_data", "egfr_compounds_raw.csv")
     filtered_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "02_filtering", "egfr_filtered.csv")
+    binding_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "03_docking", "egfr_binding_affinity.csv")
+    admet_all_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "04_admet", "egfr_admet_all.csv")
     n_raw = len(pd.read_csv(raw_path)) if os.path.exists(raw_path) else 10005
     n_filtered = len(pd.read_csv(filtered_path)) if os.path.exists(filtered_path) else 6608
+    n_binding = len(pd.read_csv(binding_path)) if os.path.exists(binding_path) else 500
+    n_admet_all = len(pd.read_csv(admet_all_path)) if os.path.exists(admet_all_path) else 500
 
     funnel_counts = {
         "ChEMBL EGFR (IC50)": n_raw,
         "Lipinski + PAINS Filter": n_filtered,
-        "DeepDTA + ChemBERTa": len(df),
-        "ADMET Filter": len(df),
+        "DeepDTA + ChemBERTa\n(Combined Score Top)": n_admet_all,
+        "ADMET Filter (Top 50%)": len(df),
         "Final Diverse Candidates": len(df_final),
     }
     create_pipeline_funnel(funnel_counts, os.path.join(FIGURES_DIR, "fig08_pipeline_funnel.png"))

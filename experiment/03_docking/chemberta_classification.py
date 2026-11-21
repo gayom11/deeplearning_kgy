@@ -13,7 +13,7 @@ import numpy as np
 import torch
 from transformers import AutoTokenizer, AutoModel
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.model_selection import cross_val_score, cross_val_predict, StratifiedKFold
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import matplotlib
@@ -89,9 +89,11 @@ def main():
     cv_scores = cross_val_score(clf, emb_pca, labels, cv=cv, scoring="roc_auc", n_jobs=-1)
     print(f"  ROC-AUC: {cv_scores.mean():.3f} ± {cv_scores.std():.3f}")
 
-    clf.fit(emb_pca, labels)
-    probs = clf.predict_proba(emb_pca)[:, 1]
+    # Out-of-fold 예측으로 데이터 누수 방지
+    probs = cross_val_predict(clf, emb_pca, labels, cv=cv, method="predict_proba", n_jobs=-1)[:, 1]
     df["chemberta_active_prob"] = probs
+    # 최종 모델 학습 (시각화 및 추후 사용)
+    clf.fit(emb_pca, labels)
 
     # 회귀 — pChEMBL 예측
     print("Training RandomForest regressor (5-fold CV)...")
@@ -99,8 +101,11 @@ def main():
     reg_scores = cross_val_score(reg, emb_pca, df["pchembl_value"].values, cv=5, scoring="r2", n_jobs=-1)
     print(f"  R²: {reg_scores.mean():.3f} ± {reg_scores.std():.3f}")
 
+    # Out-of-fold 예측으로 데이터 누수 방지
+    pchembl_pred = cross_val_predict(reg, emb_pca, df["pchembl_value"].values, cv=5, n_jobs=-1)
+    df["chemberta_predicted_pchembl"] = pchembl_pred
+    # 최종 모델 학습 (시각화 및 추후 사용)
     reg.fit(emb_pca, df["pchembl_value"].values)
-    df["chemberta_predicted_pchembl"] = reg.predict(emb_pca)
 
     # === 시각화 ===
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))

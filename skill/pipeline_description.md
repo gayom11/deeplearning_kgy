@@ -19,7 +19,7 @@ ChEMBL (CHEMBL203, EGFR)
 │ 768-dim → PCA(50-dim) → RandomForest → ROC-AUC 0.831
 ▼
 [Step 5] ADMET-AI (Chemprop) — 약동학 평가
-│ 상위 500개 → HIA/hERG/AMES/DILI 등 16속성 → 상위 50% 선별 (250개)
+│ Combined Score 상위 500개 → HIA/hERG/AMES/DILI 등 16속성 → 상위 50% 선별 (250개)
 ▼
 [Step 6] 종합 점수 & 화학적 다양성 필터
 │ 가중 평균 + Tanimoto 중복 제거 (> 0.8) → 최종 10개
@@ -44,7 +44,7 @@ ChEMBL (CHEMBL203, EGFR)
 |------|------|-------|
 | experiment/01_chembl_data/egfr_compounds_raw.csv | ChEMBL 원본 | 10,005 |
 | experiment/02_filtering/egfr_filtered.csv | Lipinski 통과 | 6,608 |
-| experiment/03_docking/egfr_binding_affinity.csv | DeepDTA 결과 | ~4,000 |
+| experiment/03_docking/egfr_binding_affinity.csv | DeepDTA 결과 | 5,810 |
 | experiment/03_docking/egfr_chemberta_scores.csv | ChemBERTa 결과 | 6,608 |
 | experiment/04_admet/egfr_admet_passed.csv | ADMET 통과 | 250 |
 | experiment/05_final_candidates/final_candidates.csv | 최종 10개 | 10 |

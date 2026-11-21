@@ -12,7 +12,10 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 
-API_KEY = "up_r2f9Y6uBUMZTg7S885tCGDdnGZUxO"
+API_KEY = os.environ.get("SOLAR_API_KEY", "")
+if not API_KEY:
+    print("ERROR: SOLAR_API_KEY 환경변수를 설정하세요. (예: set SOLAR_API_KEY=your_key)")
+    sys.exit(1)
 API_URL = "https://api.upstage.ai/v1/chat/completions"
 MODEL = "solar-pro4"
 
