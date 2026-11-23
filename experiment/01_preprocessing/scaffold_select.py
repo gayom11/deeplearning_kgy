@@ -46,30 +46,51 @@ def main():
     n_scaffolds = df_valid["scaffold"].nunique()
     print(f"Unique scaffolds: {n_scaffolds}")
 
-    # 그룹당 최대 3개 선별 (logP 다양성 기준 — 그룹 내에서 logP 분산 최대화)
+    # 그룹당 최대 3개 선별
+    # 선택 규칙: Ro5 위반 수 적은 순 → MW 작은 순 → ChEMBL ID 순
+    # (약물 가능성 판단은 예측·도킹 단계에서 수행)
+    SELECTION_RULE = "Ro5 violations ASC → MW ASC → ID ASC"
     print(f"Selecting max {MAX_PER_SCAFFOLD} per scaffold...")
+    print(f"  Selection rule: {SELECTION_RULE}")
     selected = []
     excluded_scaffold = []
 
     for scaf, group in df_valid.groupby("scaffold"):
         if len(group) <= MAX_PER_SCAFFOLD:
-            selected.append(group)
-        else:
-            # logP 기준으로 고르게 분포된 3개 선택
-            group_sorted = group.sort_values("logP")
-            indices = [0, len(group_sorted)//2, len(group_sorted)-1]
-            chosen = group_sorted.iloc[indices]
-            selected.append(chosen)
-            n_excluded = len(group) - MAX_PER_SCAFFOLD
             for _, row in group.iterrows():
-                if row.name not in chosen.index:
-                    excluded_scaffold.append({
-                        "molecule_chembl_id": row["molecule_chembl_id"],
-                        "scaffold": scaf,
-                        "reason": f"scaffold_group_limit (kept {MAX_PER_SCAFFOLD}/{len(group)})"
-                    })
+                selected.append({**row, "selection_rule": "group_size_leq_3"})
+        else:
+            # Ro5 위반 수 적은 순 → MW 작은 순 → ID 순
+            group_sorted = group.sort_values(
+                ["HBD", "MW", "molecule_chembl_id"],  # HBD as proxy for violations
+                ascending=[True, True, True]
+            )
+            # 실제 위반 수 계산
+            def count_violations(r):
+                v = 0
+                if r["MW"] > 500: v += 1
+                if r["logP"] > 5: v += 1
+                if r["HBD"] > 5: v += 1
+                if r["HBA"] > 10: v += 1
+                return v
+            group_sorted["ro5_violations"] = group_sorted.apply(count_violations, axis=1)
+            group_sorted = group_sorted.sort_values(
+                ["ro5_violations", "MW", "molecule_chembl_id"],
+                ascending=[True, True, True]
+            )
+            chosen = group_sorted.head(MAX_PER_SCAFFOLD)
+            for _, row in chosen.iterrows():
+                selected.append({**row, "selection_rule": SELECTION_RULE})
+            for _, row in group_sorted.iloc[MAX_PER_SCAFFOLD:].iterrows():
+                excluded_scaffold.append({
+                    "molecule_chembl_id": row["molecule_chembl_id"],
+                    "scaffold": scaf,
+                    "group_size": len(group),
+                    "ro5_violations": row.get("ro5_violations", ""),
+                    "reason": f"scaffold_group_limit: kept {MAX_PER_SCAFFOLD}/{len(group)} by {SELECTION_RULE}"
+                })
 
-    df_selected = pd.concat(selected).reset_index(drop=True)
+    df_selected = pd.DataFrame(selected).reset_index(drop=True)
     print(f"After scaffold selection: {len(df_selected)}")
 
     # 시각화
