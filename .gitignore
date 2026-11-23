@@ -20,3 +20,4 @@ experiment/03_docking/*.sdf
 experiment/03_docking/*.pdb
 experiment/03_docking/gnina_log.txt
 experiment/**/*.csv
+chembl_37_chemreps.txt.gz
