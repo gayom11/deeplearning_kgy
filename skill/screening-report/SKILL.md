@@ -6,11 +6,20 @@ description: EGFR 타겟 비소세포폐암 virtual screening 보고서 작성. 
 
 최종 보고서 요청이면 아래 순서로 experiment 안의 실제 파일만 근거로 작성한다. 파일이 없으면 해당 섹션에서 중단한다.
 
-## 과학적 근거 (Solar가 직접 URL을 열어 확인)
-- 질병: EGFR 관련 비소세포폐암. Open Targets https://platform.opentargets.org/disease/EFO_0003060/associations
-- 약물 근거: NCI Erlotinib https://www.cancer.gov/publications/dictionaries/cancer-drug/def/erlotinib-hydrochloride
-- 타겟: UniProt P00533 https://www.uniprot.org/uniprot/P00533 / ChEMBL CHEMBL203
-- 구조: PDB 1M17 (wild-type EGFR + Erlotinib, 2.60 Å) https://www.rcsb.org/structure/1M17
+## 과학적 근거 (탐색 결과, URL 직접 검증 완료)
+
+탐색 경로: 질병·하위유형 › 단백질·역할 › 조절 방향 › 근거 URL › 구조 ID
+
+| 항목 | 내용 | 근거 URL |
+|------|------|----------|
+| 질병·하위유형 | 비소세포폐암 (non-small cell lung carcinoma, MONDO_0005233) | https://platform.opentargets.org/disease/MONDO_0005233/associations |
+| 단백질·역할 | EGFR (Epidermal Growth Factor Receptor) — 수용체 타이로신 키나제. Open Targets 연관성 1위 (score 0.888, 5,860개 타겟 중) | https://platform.opentargets.org/target/ENSG00000146648 |
+| 조절 방향 | EGFR 억제 (저해) — Erlotinib은 ATP와 경쟁적으로 EGFR 타이로신 키나제를 억제하여 종양 성장 억제 | https://www.cancer.gov/publications/dictionaries/cancer-drug/def/erlotinib-hydrochloride |
+| UniProt | P00533 — Homo sapiens, 1,210 aa, Cell membrane, Receptor tyrosine kinase | https://www.uniprot.org/uniprotkb/P00533/entry |
+| ChEMBL Target | CHEMBL203 | https://www.ebi.ac.uk/chembl/target_report_card/CHEMBL203/ |
+| PDB 구조 | 1M17 — EGFR kinase domain + Erlotinib(AQ4), wild-type(변이 없음), 2.60 Å, Homo sapiens | https://www.rcsb.org/structure/1M17 |
+
+후보 단백질 비교: EGFR(score 0.888) vs KRAS(score 0.834). EGFR은 타이로신 키나제 억제제로 직접 약물 타겟이 가능하며 기존 FDA 승인야이 4종 존재. KRAS는 이후 신호전달 단백질로 직접 결합 표적화가 어려워 EGFR을 선정함.
 
 ## 읽어야 할 파일과 용도
 | 파일 | 용도 |
