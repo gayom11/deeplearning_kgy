@@ -1,0 +1,8 @@
+﻿stage,n
+ChEMBL 37 drug-like 샘플링,50000
+Lipinski Ro5 + PAINS 통과,47050
+Bemis-Murcko 골격별 대표,22726
+ChemBERTa 활성 예측 상위,1000
+ADMET 평가 상위,300
+GNINA 도킹 완료,297
+최종 후보 (다양성 필터),10
