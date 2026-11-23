@@ -28,10 +28,17 @@ os.makedirs(REPORT_DIR, exist_ok=True)
 
 def read_skills():
     content = {}
-    for f in sorted(os.listdir(SKILL_DIR)):
-        if f.endswith(".md"):
-            with open(os.path.join(SKILL_DIR, f), "r", encoding="utf-8") as fh:
-                content[f] = fh.read()
+    # SKILL.md 단일 파일 (OpenCode 형식)
+    skill_path = os.path.join(SKILL_DIR, "screening-report", "SKILL.md")
+    if os.path.exists(skill_path):
+        with open(skill_path, "r", encoding="utf-8") as fh:
+            content["SKILL.md"] = fh.read()
+    else:
+        # fallback: 개별 md 파일
+        for f in sorted(os.listdir(SKILL_DIR)):
+            if f.endswith(".md"):
+                with open(os.path.join(SKILL_DIR, f), "r", encoding="utf-8") as fh:
+                    content[f] = fh.read()
     return content
 
 
@@ -67,6 +74,27 @@ SYSTEM = """당신은 약학/신약개발 분야의 학술 보고서를 작성�
 - AI 특유의 과잉 설명 하지 말 것"""
 
 
+def _build_candidates_instruction():
+    """CSV에서 실제 후보 데이터를 읽어 프롬프트에 주입"""
+    csv_path = os.path.join(PROJECT_DIR, "experiment", "05_final_candidates", "final_candidates.csv")
+    try:
+        import pandas as pd
+        df = pd.read_csv(csv_path)
+        lines = []
+        lines.append("fig08/fig09 참조. 종합 점수 가중치(CNN 30%, ChemBERTa 25%, ADMET 25%, Vina 20%). Tanimoto > 0.7 중복 제거.")
+        lines.append("분량: 6줄 + 표 1개.")
+        lines.append("")
+        lines.append("중요: 아래 표의 ChEMBL ID와 숫자를 정확히 그대로 사용하세요. 절대로 숫자를 변경하거나 새로 만들지 마세요.")
+        lines.append("")
+        lines.append("| ChEMBL ID | ChemBERTa | CNN affinity (pKd) | Vina (kcal/mol) | ADMET | 최종 점수 |")
+        lines.append("|-----------|-----------|-------------------|-----------------|-------|----------|")
+        for _, r in df.iterrows():
+            lines.append(f"| {r['molecule_chembl_id']} | {r.get('predicted_active_prob',0):.3f} | {r.get('cnn_affinity',0):.3f} | {r.get('vina_score',0):.3f} | {r.get('admet_score',0):.3f} | {r.get('final_score',0):.3f} |")
+        return "\n".join(lines)
+    except Exception as e:
+        return f"fig08/fig09 참조. 최종 10개 표. 분량: 6줄 + 표 1개. (CSV 읽기 실패: {e})"
+
+
 def generate_sections(skills):
     full_skill = "\n\n---\n\n".join(f"## {k}\n{v}" for k, v in skills.items())
     sections = {}
@@ -82,7 +110,7 @@ def generate_sections(skills):
         "results_docking": ("5.4 GNINA 도킹", "fig07 참조. PDB 1M17 수용체, Erlotinib autobox, 300개 도킹. CNN affinity + Vina score. 분량: 5줄.", 800),
         "results_admet": ("5.5 ADMET 프로파일", "fig04/fig05 참조. 16속성 평가. HIA 평균 0.958, AMES 0.333. 물리화학적 성질 포함. 분량: 5줄.", 800),
         "results_generation": ("5.6 분자 생성", "fig11 참조. SELFIES 돌연변이 + 스캐폴드 호핑. 778개 drug-like, 73% novel. 분량: 5줄.", 800),
-        "candidates": ("6. 최종 후보 물질", "fig08/fig09 참조. 종합 점수 가중치(CNN 30%, ChemBERTa 25%, ADMET 25%, Vina 20%). Tanimoto > 0.7 중복 제거. 최종 10개 표(ID, CNN affinity, Vina, ADMET, 최종점수). 분량: 6줄 + 표 1개.", 1500),
+        "candidates": ("6. 최종 후보 물질", _build_candidates_instruction(), 2000),
         "conclusion": ("7. 결론", "6개 모델 활용, 학습/스크리닝 분리 의의, CPU+Docker로 GNINA 실현, 한계(실험 검증 부재), 향후 과제. 분량: 6줄.", 800),
     }
 
