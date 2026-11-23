@@ -39,6 +39,7 @@ CNN affinity 30% + ChemBERTa 25% + ADMET 25% + Vina 20% (각 정규화)
 1. DeepDTA(DeepPurpose MPNN_CNN_DAVIS) 시도 → 실험값과 상관계수 r≈0.03, 사실상 무효하여 GNINA로 대체.
 2. ChemBERTa 회귀(pChEMBL 연속값 예측) 시도 → CV R²=-18.2, 이진 분류로 전환하여 ROC-AUC 0.897 달성.
 3. ChEMBL 2,897,819개 전체 처리 시도 → CPU 환경에서 임베딩 추출 수일 소요 예상, drug-like 50,000개 샘플링으로 대응.
+4. SELFIES 생성 분자 778개 ADMET 재평가 → ADMET 점수 최대 0.13으로 시드 분자(0.17~0.26)보다 전반적으로 낮음. SELFIES 랜덤 돌연변이가 약물 적합성을 유지하지 못하는 한계 확인. experiment/05_final_candidates/generated_admet_evaluated.csv 참조.
 
 ## 보고서 구조 (최대 15쪽, 11pt, 한국어, 학술 문체)
 1. 서론 (0.5쪽): 질병·타겟 근거 URL 표, 기존 EGFR 억제제 표. 한 문단 3줄 이내.
