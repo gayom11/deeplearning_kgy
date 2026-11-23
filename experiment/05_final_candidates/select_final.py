@@ -34,10 +34,9 @@ random.seed(42)
 np.random.seed(42)
 
 REFERENCE_DRUGS = {
-    "Erlotinib":   "C#Cc1cccc(Nc2ncnc3cc(OCCOC)c(OCCOC)cc23)c1",
-    "Gefitinib":   "COc1cc2ncnc(Nc3ccc(F)c(Cl)c3)c2cc1OCCCN1CCOCC1",
-    "Osimertinib": "C=CC(=O)Nc1cc(Nc2nccc(-c3cn(C)c4ccccc34)n2)c(OC)cc1N(C)CCN(C)C",
-    "Afatinib":    "CN(C)/C=C/C(=O)Nc1cc2c(Nc3ccc(F)c(Cl)c3)ncnc2cc1OC1CCOC1",
+    "Vemurafenib":  "CCS(=O)(=O)Nc1ccc(F)c(C(=O)c2cc(-c3ccc(Cl)cc3)c[nH]2)c1F",
+    "Dabrafenib":   "CC(C)(C)c1nc(-c2cccc(NS(=O)(=O)c3c(F)cccc3F)c2F)c(-c2ccnc(N)n2)s1",
+    "Encorafenib":  "COC(=O)Nc1ccc(Oc2cc(NC(=O)c3ccc(F)cn3)ncn2)c(Cl)c1",
 }
 
 COMMON_TOKENS = [

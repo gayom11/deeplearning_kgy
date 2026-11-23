@@ -1,7 +1,7 @@
 """
-Step 2: ChemBERTa 기반 EGFR 활성 예측 모델 학습 + Virtual Screening
+Step 2: ChemBERTa 기반 BRAF 활성 예측 모델 학습 + Virtual Screening
 
-1) EGFR 학습 데이터로 분류 모델 학습 (Active vs Inactive)
+1) BRAF 학습 데이터로 분류 모델 학습 (Active vs Inactive)
 2) 학습된 모델로 스크리닝 라이브러리 47K개 활성 예측
 3) 상위 ~1,000개 선별 → 다음 단계(ADMET)로 전달
 
@@ -90,7 +90,7 @@ def train_and_evaluate(emb_pca, labels):
 def plot_training_results(df_train, oof_probs, cv_scores, emb_pca, labels):
     """학습 결과 시각화"""
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-    fig.suptitle("ChemBERTa EGFR Activity Model — Training Results",
+    fig.suptitle("ChemBERTa BRAF Activity Model — Training Results",
                  fontsize=14, fontweight="bold")
 
     # 1) t-SNE
@@ -173,7 +173,7 @@ def plot_screening_results(df_screen_top, df_screen_all):
     if "max_tanimoto_sim" in df_screen_top.columns:
         axes[2].hist(df_screen_top["max_tanimoto_sim"], bins=30,
                       color="#ff7f0e", edgecolor="white", alpha=0.8)
-        axes[2].set_xlabel("Tanimoto Similarity to Known EGFR Drugs")
+        axes[2].set_xlabel("Tanimoto Similarity to Known BRAF Drugs")
         axes[2].set_ylabel("Count")
         axes[2].set_title("Structural Novelty of Hits")
 

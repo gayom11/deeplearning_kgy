@@ -6,7 +6,7 @@ Step 1: 전처리 — Lipinski + PAINS 필터링 + 분자 기술자 계산
 2. 분자 기술자 계산 (MW, logP, HBD, HBA, TPSA 등)
 3. Lipinski Rule of Five 필터 (1회 위반 허용)
 4. PAINS 필터 (pan-assay interference compounds 제거)
-5. 기존 EGFR 약물 대비 Tanimoto 유사도 계산
+5. 기존 BRAF 약물 대비 Tanimoto 유사도 계산
 """
 import os
 import sys
@@ -24,7 +24,7 @@ OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIGURES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "figures")
 os.makedirs(FIGURES_DIR, exist_ok=True)
 
-# 기존 EGFR 약물 (참조용)
+# 기존 BRAF 약물 (참조용)
 REFERENCE_DRUGS = {
     "Vemurafenib":  "CCS(=O)(=O)Nc1ccc(F)c(C(=O)c2cc(-c3ccc(Cl)cc3)c[nH]2)c1F",
     "Dabrafenib":   "CC(C)(C)c1nc(-c2cccc(NS(=O)(=O)c3c(F)cccc3F)c2F)c(-c2ccnc(N)n2)s1",
@@ -77,7 +77,7 @@ def pains_filter(smiles_list):
 
 
 def compute_similarity_to_refs(smiles_list):
-    """기존 EGFR 약물 대비 Tanimoto 유사도 (Morgan FP)"""
+    """기존 BRAF 약물 대비 Tanimoto 유사도 (Morgan FP)"""
     ref_fps = {}
     for name, smi in REFERENCE_DRUGS.items():
         mol = Chem.MolFromSmiles(smi)
@@ -132,7 +132,7 @@ def process_dataset(df, name):
     print(f"  After PAINS: {len(df)}")
 
     # 유사도 계산
-    print("  Computing similarity to known EGFR drugs...")
+    print("  Computing similarity to known BRAF drugs...")
     max_sims, best_refs = compute_similarity_to_refs(df["canonical_smiles"].tolist())
     df["max_tanimoto_sim"] = max_sims
     df["most_similar_drug"] = best_refs

@@ -1,7 +1,7 @@
 """
 Step 4-A: GNINA 도킹 준비
 
-1) PDB 1M17 (EGFR + Erlotinib) 다운로드
+1) PDB 3OG7 (BRAF + Vemurafenib) 다운로드
 2) 단백질(receptor)과 리간드(crystal ligand) 분리
 3) ADMET 상위 300개 화합물을 SDF로 변환
 4) GNINA 실행 스크립트 생성
@@ -29,7 +29,7 @@ def download_pdb(pdb_id, output_path):
 
 
 def extract_receptor_and_ligand(pdb_path, rec_path, lig_path):
-    """PDB에서 단백질(ATOM)과 리간드(HETATM AQ4=Erlotinib) 분리"""
+    """PDB에서 단백질(ATOM)과 리간드(HETATM 032=Vemurafenib) 분리"""
     rec_lines = []
     lig_lines = []
 
@@ -100,7 +100,7 @@ cd "$WORK_DIR"
 echo "=== GNINA Docking ==="
 echo "Receptor: rec.pdb"
 echo "Ligands: ligands.sdf ({n_compounds} compounds)"
-echo "Autobox: crystal_ligand.pdb (Erlotinib binding site)"
+echo "Autobox: crystal_ligand.pdb (Vemurafenib binding site)"
 echo ""
 
 # GNINA 도킹 실행
@@ -157,8 +157,8 @@ def main():
 
     print(f"\n=== Docking Preparation Complete ===")
     print(f"Files in {OUTPUT_DIR}:")
-    print(f"  rec.pdb           - EGFR receptor (PDB {PDB_ID})")
-    print(f"  crystal_ligand.pdb - Erlotinib (binding site reference)")
+    print(f"  rec.pdb           - BRAF receptor (PDB {PDB_ID})")
+    print(f"  crystal_ligand.pdb - Vemurafenib (binding site reference)")
     print(f"  ligands.sdf       - {n} compounds for docking")
     print(f"  run_gnina.sh      - Docker execution script")
     print(f"\n실행 방법:")
