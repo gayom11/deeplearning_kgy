@@ -40,19 +40,20 @@ description: BRAF V600E 타겟 피부 흑색종 virtual screening 보고서 작�
 | experiment/05_final_candidates/generated_admet_evaluated.csv | 생성 분자 ADMET 재평가 |
 | experiment/figures/*.png | 보고서 삽입 그림 (상대경로 명시) |
 
-## 모델 6종
-| 모델 | 파일 | 역할 |
-|------|------|------|
-| RDKit Lipinski/PAINS/Scaffold | experiment/01_preprocessing/ | 물리화학 필터 + Bemis-Murcko scaffold 그룹핑 |
-| ChemBERTa (seyonec/ChemBERTa-zinc-base-v1) | experiment/02_model_training/ | BRAF 활성 분류 (Transformer) |
-| GNINA (Docker gnina/gnina) | experiment/03_docking/ | PDB 3OG7 기반 구조 도킹 (CNN scoring) |
-| ADMET-AI (Chemprop) | experiment/04_admet/ | 약동학 16속성 + 물리화학적 성질 |
-| Morgan Fingerprint (ECFP4) | experiment/01_preprocessing/ | Tanimoto 유사도 |
-| SELFIES Generator | experiment/05_final_candidates/ | 신규 분자 생성 |
+## 모델 7종 (각 모델의 결과를 하나의 점수로 임의 통합하지 않는다)
+| 모델 | 유형 | 입력 | 출력 | 판정 기준 |
+|------|------|------|------|------------|
+| RDKit | 규칙 기반 | SMILES | Ro5 위반 수, scaffold | 위반 ≤ 1 |
+| ChemBERTa | Transformer | SMILES → 임베딩 | 활성 확률 (0~1) | ≥ 0.8 |
+| Solubility MLP | 회귀 (MLP) | 6개 기술자 | 예측 logS | logS ≥ -4 |
+| GNN pIC50 | 회귀 (GBR+Morgan) | SMILES → FP | 예측 pIC50 | pIC50 ≥ 6.0 |
+| GNINA | CNN 도킹 (Docker) | SMILES + PDB | CNN affinity, Vina | CNN > 5.0 |
+| ADMET-AI | Chemprop 앱샘블 | SMILES | 16속성 확률 | HIA ≥ 0.5, AMES ≤ 0.5 |
+| SELFIES | 문법 기반 생성 | SMILES | 신규 분자 | drug-like 필터 |
 
-## 종합 점수 가중치
-experiment/05_final_candidates/select_final.py에서 확인:
-CNN affinity 30% + ChemBERTa 25% + ADMET 25% + Vina 20% (각 정규화)
+## 최종 선정 방식 (임의 통합 금지)
+각 모델의 판정 기준을 개별적으로 적용하여, 모든 기준을 통과한 화합물만 최종 후보로 선정한다.
+experiment/05_final_candidates/select_final.py 참조.
 
 ## 시도와 실패 (보고서에 반드시 포함)
 1. DeepDTA(DeepPurpose MPNN_CNN_DAVIS) 시도 → 실험값과 상관계수 r≈0.03, 사실상 무효하여 GNINA로 대체.
