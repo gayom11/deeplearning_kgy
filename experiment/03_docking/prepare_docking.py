@@ -14,7 +14,7 @@ from rdkit.Chem import AllChem
 
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 ADMET_FILE = os.path.join(OUTPUT_DIR, "..", "04_admet", "admet_top_hits.csv")
-PDB_ID = "1M17"
+PDB_ID = "3OG7"
 
 
 def download_pdb(pdb_id, output_path):
@@ -39,7 +39,7 @@ def extract_receptor_and_ligand(pdb_path, rec_path, lig_path):
                 rec_lines.append(line)
             elif line.startswith("HETATM"):
                 resname = line[17:20].strip()
-                if resname == "AQ4":  # Erlotinib in 1M17
+                if resname == "032":  # Vemurafenib (PLX4032) in 3OG7
                     lig_lines.append(line)
             elif line.startswith("END"):
                 rec_lines.append(line)

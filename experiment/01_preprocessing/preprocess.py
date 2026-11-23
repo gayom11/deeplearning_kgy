@@ -26,10 +26,9 @@ os.makedirs(FIGURES_DIR, exist_ok=True)
 
 # 기존 EGFR 약물 (참조용)
 REFERENCE_DRUGS = {
-    "Erlotinib":   "C#Cc1cccc(Nc2ncnc3cc(OCCOC)c(OCCOC)cc23)c1",
-    "Gefitinib":   "COc1cc2ncnc(Nc3ccc(F)c(Cl)c3)c2cc1OCCCN1CCOCC1",
-    "Osimertinib": "C=CC(=O)Nc1cc(Nc2nccc(-c3cn(C)c4ccccc34)n2)c(OC)cc1N(C)CCN(C)C",
-    "Afatinib":    "CN(C)/C=C/C(=O)Nc1cc2c(Nc3ccc(F)c(Cl)c3)ncnc2cc1OC1CCOC1",
+    "Vemurafenib":  "CCS(=O)(=O)Nc1ccc(F)c(C(=O)c2cc(-c3ccc(Cl)cc3)c[nH]2)c1F",
+    "Dabrafenib":   "CC(C)(C)c1nc(-c2cccc(NS(=O)(=O)c3c(F)cccc3F)c2F)c(-c2ccnc(N)n2)s1",
+    "Encorafenib":  "COC(=O)Nc1ccc(Oc2cc(NC(=O)c3ccc(F)cn3)ncn2)c(Cl)c1",
 }
 
 
@@ -150,7 +149,7 @@ def plot_preprocessing_summary(df_train, df_screen):
 
     props = ["MW", "logP", "HBD", "HBA", "TPSA", "max_tanimoto_sim"]
     labels = ["Molecular Weight", "logP", "H-Bond Donors",
-              "H-Bond Acceptors", "TPSA (Å²)", "Tanimoto Sim. to EGFR Drugs"]
+              "H-Bond Acceptors", "TPSA (Å²)", "Tanimoto Sim. to BRAF Drugs"]
 
     for ax, prop, label in zip(axes.flat, props, labels):
         if prop in df_train.columns:
@@ -172,7 +171,7 @@ def plot_preprocessing_summary(df_train, df_screen):
 
 def main():
     # 데이터 로드
-    df_train = pd.read_csv(os.path.join(DATA_DIR, "egfr_training_data.csv"))
+    df_train = pd.read_csv(os.path.join(DATA_DIR, "braf_training_data.csv"))
     df_screen = pd.read_csv(os.path.join(DATA_DIR, "screening_library.csv"))
 
     # 전처리 적용

@@ -56,31 +56,34 @@ def main():
     excluded_scaffold = []
 
     for scaf, group in df_valid.groupby("scaffold"):
+        # Ro5 위반 수 계산 (모든 그룹에 적용)
+        def count_violations(r):
+            v = 0
+            if r["MW"] > 500: v += 1
+            if r["logP"] > 5: v += 1
+            if r["HBD"] > 5: v += 1
+            if r["HBA"] > 10: v += 1
+            return v
+        group = group.copy()
+        group["ro5_violations"] = group.apply(count_violations, axis=1)
+
         if len(group) <= MAX_PER_SCAFFOLD:
             for _, row in group.iterrows():
-                selected.append({**row, "selection_rule": "group_size_leq_3"})
+                d = dict(row)
+                d["scaffold"] = scaf
+                d["selection_rule"] = "group_size_leq_3"
+                selected.append(d)
         else:
-            # Ro5 위반 수 적은 순 → MW 작은 순 → ID 순
             group_sorted = group.sort_values(
-                ["HBD", "MW", "molecule_chembl_id"],  # HBD as proxy for violations
-                ascending=[True, True, True]
-            )
-            # 실제 위반 수 계산
-            def count_violations(r):
-                v = 0
-                if r["MW"] > 500: v += 1
-                if r["logP"] > 5: v += 1
-                if r["HBD"] > 5: v += 1
-                if r["HBA"] > 10: v += 1
-                return v
-            group_sorted["ro5_violations"] = group_sorted.apply(count_violations, axis=1)
-            group_sorted = group_sorted.sort_values(
                 ["ro5_violations", "MW", "molecule_chembl_id"],
                 ascending=[True, True, True]
             )
             chosen = group_sorted.head(MAX_PER_SCAFFOLD)
             for _, row in chosen.iterrows():
-                selected.append({**row, "selection_rule": SELECTION_RULE})
+                d = dict(row)
+                d["scaffold"] = scaf
+                d["selection_rule"] = SELECTION_RULE
+                selected.append(d)
             for _, row in group_sorted.iloc[MAX_PER_SCAFFOLD:].iterrows():
                 excluded_scaffold.append({
                     "molecule_chembl_id": row["molecule_chembl_id"],
